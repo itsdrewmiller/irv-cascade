@@ -126,14 +126,16 @@ describe('irvCascade', function() {
 			}
 		};
 
-		// it('should successfully break a tie based on australian rules', function() {
-		// 	var results = irv.calculate(tieForSecondJoey);
-		// 	assert(results.only.winner.indexOf('joey') > -1);
+		it('should successfully break a tie based on australian rules', function() {
+			var results = irv.calculate(tieForSecondJoey);
+			assert(results.only.winner.indexOf('joey') > -1);
 
-		// 	results = irv.calculate(tieForSecondSheila);
-		// 	assert(results.only.winner.indexOf('sheila') > -1);
+			results = irv.calculate(tieForSecondSheila);
+			assert(results.only.winner.indexOf('sheila') > -1);
 
-		// });
+		});
 
 	});
+
+
 });

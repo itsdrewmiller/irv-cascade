@@ -10,6 +10,10 @@ var irvCascade;
 		var _ = require('lodash');
 	}
 
+	if (typeof seedRandom === 'undefined') {
+		var seedRandom = require('seed-random');
+	}
+
 	var calculateResults = function(votes) {
 
 		var results = {};
@@ -64,8 +68,58 @@ var irvCascade;
 
 		// round is sorted ascending already
 		
-		// this is not very sophisticated - should do some tie breaking
-		return thisRound[0].candidate;
+		var lowestTotal = thisRound[0].total;
+
+		var lowestCandidates = [];
+
+		_.each(thisRound, function(result) {
+			if (result.total === lowestTotal) {
+				lowestCandidates.push(result.candidate);
+			}
+		});
+
+		// Easy, remove the lowest person
+		if (lowestCandidates.length === 1) {
+			return lowestCandidates[0];
+		}
+
+		var findMin = function(result) {
+			if (lowestCandidates.indexOf(result.candidate) > -1) {
+				return result.total;
+			} 
+		};
+
+		var lowestRoundTotal = null;
+
+		var matchLosers = function(result) {
+			var index = lowestCandidates.indexOf(result.candidate);
+			return (result.total === lowestRoundTotal && index > -1);
+		};
+
+		var mapToCandidate = function(result) {
+			return result.candidate;
+		};
+
+		// ok, let's look at previous rounds until one person has the lowest results
+		// the current round is the last entry in the array so let's skip it
+		for (var roundsBack = 1; roundsBack < allRounds.length; roundsBack ++) {
+
+			var currentRound = allRounds[allRounds.length - roundsBack - 1];
+
+			lowestRoundTotal = _.min(currentRound, findMin).total;
+			lowestCandidates = _.filter(currentRound, matchLosers).map(mapToCandidate);
+
+			if (lowestCandidates.length === 1) {
+				return lowestCandidates[0];
+			}
+
+		}
+
+		// well, crap - let's use a consistent random number generator
+		var seed = lowestCandidates.join(" vs. ");
+		var index = Math.floor(seedRandom(seed)() * lowestCandidates.length);
+		
+		return lowestCandidates[index];
 
 	};
 
