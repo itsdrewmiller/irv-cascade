@@ -36,29 +36,11 @@ if (typeof seedRandom === 'undefined') {
 
 	};
 
-	var identifyWinners = function(results) {
+	var identifyWinner = function(results) {
 		
-		var maxVotes = results[results.length - 1].total;
-		var maxCandidates = [];
-
-		var totalVotes = 0;
-		for (var i = 0; i<results.length; i++) {
-			totalVotes += results[i].total;
-			if (results[i].total === maxVotes) {
-				maxCandidates.push(results[i].candidate);
-			}
+		if (results.length === 1) {
+			return results[0].candidate;
 		}
-
-		if (maxCandidates.length === results.length) {
-			// n-way tie, return them all
-			return maxCandidates;
-		}
-
-		if (maxVotes * 2 > totalVotes) {
-			// the winner already has 50%, return them
-			return maxCandidates[0];	
-		}
-
 		return null;
 
 	};
@@ -148,7 +130,7 @@ if (typeof seedRandom === 'undefined') {
 			results.sort(resultSortAscending);
 
 			roundTotals.push(results);
-			winner = identifyWinners(results);
+			winner = identifyWinner(results);
 
 			if (!winner) {
 
@@ -169,11 +151,23 @@ if (typeof seedRandom === 'undefined') {
 	irvCascade = {
 		calculate: function(cascade) {
 			var results = {};
+			var winners = [];
+
+
 
 			_.each(cascade.elections, function(election) {
 				var votes = cascade.votes[election];
 
+				_.each(votes, function(vote, index) {
+					votes[index] = _.filter(vote, function(v) {
+						return winners.indexOf(v) === -1;
+					});
+
+				});
+
 				results[election] = calculateElection(votes);
+
+				winners.push(results[election].winner);
 				
 			});
 
