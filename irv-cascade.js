@@ -1,18 +1,17 @@
-
-
-
-
 var irvCascade;
+
+if (typeof _ === 'undefined') {
+	_ = require('lodash');
+}
+
+if (typeof seedRandom === 'undefined') {
+	seedRandom = require('seed-random');
+}
+
 
 (function() {
 
-	if (typeof _ === 'undefined') {
-		var _ = require('lodash');
-	}
 
-	if (typeof seedRandom === 'undefined') {
-		var seedRandom = require('seed-random');
-	}
 
 	var calculateResults = function(votes) {
 
