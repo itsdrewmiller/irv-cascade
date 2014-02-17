@@ -10,9 +10,7 @@ if (typeof seedRandom === 'undefined') {
 
 
 (function() {
-
-
-
+	// derp
 	var calculateResults = function(votes) {
 
 		var results = {};
